@@ -61,16 +61,13 @@ class TripsPage extends Component{
   }
 
   removeEmptyBus = (id = -1) => {
-    console.log("removing bus: ",id)
     let newBuses
     if(id === -1){
       newBuses = this.state.buses.slice(0, id)
     }
     else {
       newBuses = this.state.buses.filter(bus => bus.id !== id)
-      console.log("filtered",newBuses)
       newBuses = newBuses.slice(0, -1)
-      console.log("sliced",newBuses)
     }
     this.setState({ buses: newBuses })
   }
@@ -92,8 +89,6 @@ class TripsPage extends Component{
 
   removeTripFromBus = (bus, tripId) => {
     const newTrips = bus.tripIds.filter(id => id !== tripId)
-    // bus.tripIds = newTrips
-    console.log("remove bus", bus)
     if(newTrips.length === 0) { this.removeEmptyBus(bus.id) }
     return newTrips
   }
@@ -134,15 +129,12 @@ class TripsPage extends Component{
     const busSched = this.createBusSched(bus)
 
     if(busSched.length === 0) {
-      console.log("sched is empty")
       return true
     }
     if(trip.endTime <= busSched[0][0]) {
-      console.log("trip is before first existing")
       return true
     }
     if(trip.startTime > busSched[busSched.length - 1][1]) {
-      console.log("trip is after last trip")
       return true
     }
 
@@ -154,7 +146,6 @@ class TripsPage extends Component{
         const nextStartExistingTrip = busSched[i+1][0]
 
         if(trip.startTime >= endExistingTrip && trip.endTime <= nextStartExistingTrip) {
-          console.log("trip is between")
           vacant = true
         }
       }
