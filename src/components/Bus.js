@@ -20,7 +20,7 @@ const Bus = ({ bus, trips, selectTrip, selectBus, selectedTrip }) => {
 
   const handleClick = () => {
     if(!bus.tripIds.includes(selectedTrip)){
-      selectBus(bus.busId)
+      selectBus(bus.id)
     }
   }
 
@@ -28,7 +28,7 @@ const Bus = ({ bus, trips, selectTrip, selectBus, selectedTrip }) => {
     <div
       className='bus-wrapper'
       onClick={handleClick}>
-      <div className="bus-id">{bus.busId}</div>
+      <div className="bus-id">{bus.id}</div>
       {renderTrips()}
     </div>
   )
