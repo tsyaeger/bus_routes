@@ -9,7 +9,8 @@ class TripsPage extends Component{
       buses: [],
       selectedTrip: null,
       selectedBus: null,
-      busSize: 1440
+      busSize: 1440,
+      newRowOpen: false,
     }
   }
 
@@ -36,15 +37,40 @@ class TripsPage extends Component{
     let selectedTrip
 
     if(this.state.selectedTrip === tripId){
+      this.removeEmptyBus()
       selectedTrip = null
     }
     else if(this.state.selectedTrip === null){
+      this.createEmptyBus()
       selectedTrip = tripId
     }
     else {
       selectedTrip = tripId
     }
-    this.setState({ selectedTrip })
+    this.setState({
+      selectedTrip,
+      newRowOpen: true
+    })
+  }
+
+  createEmptyBus = () => {
+    const { buses } = this.state
+    const newId = Math.max(...buses.map(bus => bus.id)) + 1
+    const newBus = { busId: newId, tripIds: [] }
+    console.log("created new bus", newBus)
+    this.setState({ buses: buses.concat(newBus) })
+  }
+
+  removeEmptyBus = (id = -1) => {
+    let newBuses
+    if(id === -1){
+      newBuses = this.state.buses.slice(0, id)
+    }
+    else {
+      newBuses = this.state.buses.filter(bus => bus.busId !== id)
+      newBuses = newBuses.slice(0, -1)
+    }
+    this.setState({ buses: newBuses })
   }
 
   selectBus = newBusId => {
@@ -62,13 +88,33 @@ class TripsPage extends Component{
     return this.state.trips.filter(trip => busTripIds.includes(trip.id))
   }
 
+  removeTripFromBus = (bus, tripId) => {
+    const newTrips = bus.tripIds.filter(id => id !== tripId)
+    bus.tripIds = newTrips
+    if(newTrips.length === 0) { this.removeEmptyBus(bus.busId) }
+    return newTrips
+  }
+
   moveTrip = (ogBus, newBus, tripId) => {
     const { buses } = this.state
-    console.log(ogBus, newBus)
 
-    this.checkAvailability(newBus, tripId)
-    //check availability
+    if(this.checkAvailability(newBus, tripId)){
+      let newBuses = buses.map(bus => {
+        if(bus.id === ogBus.id){
+          bus.tripIds = this.removeTripFromBus(bus, tripId)
+        }
+        else if(bus.id === newBus.id){
+          bus.tripIds = newBus.tripIds.concat(tripId)
+        }
+        return bus
+      })
+      this.setState({
+        selectedTrip: null,
+        buses: newBuses
+      })
+    }
   }
+
 
   createBusSched = bus => {
     const busTrips = this.getBusTrips(bus.tripIds)
@@ -81,10 +127,8 @@ class TripsPage extends Component{
 
   checkAvailability = (bus, tripId) => {
     let trip = this.state.trips.find(trip => trip.id === tripId)
-    console.log("trip",trip)
-
     const busSched = this.createBusSched(bus)
-    console.log("bus sched", busSched)
+
     if(busSched.length === 0) {
       console.log("sched is empty")
       return true
@@ -102,16 +146,15 @@ class TripsPage extends Component{
     for(var i = 0; i < busSched.length; i++){
 
       if(i + 1 < busSched.length){
-        const endSlot = busSched[i][1]
-        const nextStartSlot = busSched[i+1][0]
+        const endExistingTrip = busSched[i][1]
+        const nextStartExistingTrip = busSched[i+1][0]
 
-        if(trip.startTime >= endSlot && trip.endTime <= nextStartSlot) {
+        if(trip.startTime >= endExistingTrip && trip.endTime <= nextStartExistingTrip) {
+          console.log("trip is between")
           vacant = true
         }
       }
     }
-    console.log("is vacant?",vacant)
-    console.log("is vacant?",vacant)
     return vacant
   }
 

@@ -11,7 +11,6 @@
 .bus-wrapper {
   position: relative;
   height: 50px;
-  width: 1440px;
   margin: auto;
   border-bottom: 1px solid darkgray;
   display: flex;
