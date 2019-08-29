@@ -28,7 +28,6 @@ const Bus = ({ bus, trips, selectTrip, selectBus, selectedTrip }) => {
     <div
       className='bus-wrapper'
       onClick={handleClick}>
-      <div className="bus-id">{bus.id}</div>
       {renderTrips()}
     </div>
   )

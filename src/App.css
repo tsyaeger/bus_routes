@@ -5,7 +5,11 @@
 .buses-wrapper {
   border: solid red 1px;
   margin: 40px auto;
-  padding: 50px 80px;
+  padding: 50px 100px;
+}
+
+.bus-wrapper:first-child {
+  border-top: 1px solid darkgray;
 }
 
 .bus-wrapper {
@@ -19,4 +23,9 @@
   display: -ms-flexbox;
   display: -webkit-flex;
   align-items: center;
+}
+
+p {
+  margin: 0;
+  padding: 0;
 }

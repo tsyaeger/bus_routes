@@ -45,11 +45,11 @@ class TripsPage extends Component{
       selectedTrip = tripId
     }
     else {
+      this.removeEmptyBus()
       selectedTrip = tripId
     }
     this.setState({
-      selectedTrip,
-      newRowOpen: true
+      selectedTrip
     })
   }
 
@@ -57,18 +57,20 @@ class TripsPage extends Component{
     const { buses } = this.state
     const newId = Math.max(...buses.map(bus => bus.id)) + 1
     const newBus = { busId: newId, tripIds: [] }
-    console.log("created new bus", newBus)
     this.setState({ buses: buses.concat(newBus) })
   }
 
   removeEmptyBus = (id = -1) => {
+    console.log("removing bus: ",id)
     let newBuses
     if(id === -1){
       newBuses = this.state.buses.slice(0, id)
     }
     else {
-      newBuses = this.state.buses.filter(bus => bus.busId !== id)
+      newBuses = this.state.buses.filter(bus => bus.id !== id)
+      console.log("filtered",newBuses)
       newBuses = newBuses.slice(0, -1)
+      console.log("sliced",newBuses)
     }
     this.setState({ buses: newBuses })
   }
@@ -90,8 +92,9 @@ class TripsPage extends Component{
 
   removeTripFromBus = (bus, tripId) => {
     const newTrips = bus.tripIds.filter(id => id !== tripId)
-    bus.tripIds = newTrips
-    if(newTrips.length === 0) { this.removeEmptyBus(bus.busId) }
+    // bus.tripIds = newTrips
+    console.log("remove bus", bus)
+    if(newTrips.length === 0) { this.removeEmptyBus(bus.id) }
     return newTrips
   }
 
@@ -108,13 +111,14 @@ class TripsPage extends Component{
         }
         return bus
       })
-      this.setState({
-        selectedTrip: null,
-        buses: newBuses
-      })
+      this.setState({ selectedTrip: null }, this.removeEmptyBuses)
     }
   }
 
+  removeEmptyBuses = () => {
+    const newBuses = this.state.buses.filter(bus => bus.tripIds.length !== 0)
+    this.setState({buses: newBuses})
+  }
 
   createBusSched = bus => {
     const busTrips = this.getBusTrips(bus.tripIds)
