@@ -10,7 +10,6 @@ class TripsPage extends Component{
       selectedTrip: null,
       selectedBus: null,
       busSize: 1440,
-      newRowOpen: false,
     }
   }
 
@@ -97,14 +96,13 @@ class TripsPage extends Component{
     const { buses } = this.state
 
     if(this.checkAvailability(newBus, tripId)){
-      let newBuses = buses.map(bus => {
+      buses.forEach(bus => {
         if(bus.id === ogBus.id){
           bus.tripIds = this.removeTripFromBus(bus, tripId)
         }
         else if(bus.id === newBus.id){
           bus.tripIds = newBus.tripIds.concat(tripId)
         }
-        return bus
       })
       this.setState({ selectedTrip: null }, this.removeEmptyBuses)
     }
